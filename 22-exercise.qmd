@@ -162,6 +162,7 @@ summary(model_lm)
 ```
 
 ## Last, generate a plot of the Predicted vs Observed values and include a 1:1 line, and a linear model line.
+
 ```{r, echo = TRUE}
 
 join <- left_join(poudre_24, forecast_arima, by = "date")

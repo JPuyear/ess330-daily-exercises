@@ -1,0 +1,48 @@
+---
+title: 'Lab 23: Getting started with geospatial'
+output-dir: docs
+format:
+   html:
+    code-fold: true
+    toc: true
+date: "2025-05-03"
+author: 
+  name: Josh Puyear
+  email: "puyearjosh@gmail.com" 
+  
+---
+
+```{r, echo = TRUE}
+library(sf)
+library(terra)
+library(mapview)
+library(AOI)
+```
+
+
+Checking Installation (Daily Assignment 23)
+
+
+```{r, echo = TRUE}
+sf::sf_extSoftVersion()
+#>           GEOS           GDAL         proj.4 GDAL_with_GEOS     USE_PROJ_H 
+#>       "3.13.0"        "3.8.5"        "9.5.1"         "true"         "true" 
+#>           PROJ 
+#>        "9.5.1"
+
+terra::gdal()
+#> [1] "3.8.5"
+
+```
+
+
+#### Take some time to research GDAL, GEOS, and PROJ. Submit a sentence or two describing each and their role in spatial infrastructure and the value of having direct access to CLI interfaces in a functional language like R
+
+-GDAL A set of functions that performs operations in relation to rasters.
+
+-GOES: satellites from NOAA that provide UV, X-ray, magnetometer, SEISS, and terrestrial weather data.
+
+-PROJ Transforms one coordinate reference system to another, including cartographic projectoions and geodetic transformations.
+
+Value of having command line interface in a functional language like R: If you want to systematize a set of transformations to a map over a large dataset, having a CLI makes it faster to do these operations because written language can be more condensed than maps and clicking.
+
