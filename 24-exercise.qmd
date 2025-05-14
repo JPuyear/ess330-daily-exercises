@@ -10,7 +10,7 @@ author:
   name: Josh Puyear
   email: "puyearjosh@gmail.com" 
 ---
-
+# Installing necessary packages
 ```{r, echo = TRUE}
 library(sf)
 library(terra)
@@ -18,6 +18,9 @@ library(mapview)
 library(AOI)
 library(readr)
 library(ggplot2)
+library(dplyr)
+library(ggrepel)
+
 ```
 
 # download the appropriate (free) dataset into the data directory of your project. Read it into your working session
@@ -42,42 +45,46 @@ lar_cit <- st_filter(cities_sf, larimer)
 ```{r, echo = TRUE}
 ggplot() +
   geom_sf(data = larimer) +
-  geom_sf(data = lar_cit, aes(size = population/1e5), col = "red") +
+  geom_sf(data = lar_cit, aes(size = population/1e3), col = "blue") +
+   #Three largest cities: Use a larger point size and a different color for the points will help them stand out.
+  geom_sf(data = lg3, aes(size = population/1e3), col = "darkred") +
   theme_linedraw() +
-  geom_sf_text(data = lar_cit, aes(label = city), size = 2) +
-  labs(title = "Colorado Counties: Land Area",
+  geom_label_repel(
+    data = lg3,
+    aes(label = city, geometry = geometry),
+    stat = "sf_coordinates",
+    size = 3) +
+  labs(title = "Larimer County: Cities",
        size = "Population \n(100,000)",
-       fill = "Acres \n(billions)"
+       fill = "Acres \n(billions)",
+       x = "",
+       y = ""
        )
 
 ```
 
 # Determine the three cities in Larimer County with the highest population and add these to the map. Use a larger point size and a different color for the points will help them stand out.
 ```{r, echo = TRUE}
-
-
+lg3 <- lar_cit %>% 
+  filter(county_name == "Larimer") %>% 
+  slice_max(population, n = 3)
 ```
 
 # If you dont already have it, install the ggrepel package. This package provides a function called geom_label_repel() that will help you label the points without overlapping labels. The syntax is similar to geom_label() but it will automatically adjust the position of the labels to avoid overlap.
+done ^
 
 #### Like all ggplot2 layers, you can add this to your existing plot and first must prescribe the data to be used.
+^
 
 ### In the aesthetic mapping, you will need to specify the label argument to be the name of the city. and the geometry argument to be the geometry column of you sf object.
+^
 
 ### Finally, you need to set the stat argument to sf_coordinates so the function knows to use the coordinates of the geometry column for the label positions.
-
-```{r, echo = TRUE}
-# Add labels to the cities
-  ggrepel::geom_label_repel(
-    data = three_largest_cities,
-    aes(label = city, geometry = geometry),
-    stat = "sf_coordinates",
-    size = 3)
-```
+^
 
 # Use ggsave to save your final map to the images directory of your project and submit the PNG to Canvas.
 ```{r, echo = TRUE}
-
+ggsave("larimer_cities.png", plot = last_plot(), path = "C:/Users/Joshua Puyear/Documents/csu-undergrad/ess330-daily-exercises/imgs")
 
 ```
 

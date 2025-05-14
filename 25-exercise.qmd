@@ -1,0 +1,110 @@
+---
+title: 'Activity 25: Predicates and the DE-9IM'
+output-dir: docs
+format:
+   html:
+    code-fold: true
+    toc: true
+date: "2025-05-05"
+author: 
+  name: Josh Puyear
+  email: "puyearjosh@gmail.com" 
+---
+# 1. Download the data
+# 2. Read the river shp file with read_sf
+```{r, echo = TRUE}
+library(AOI)
+library(sf)
+library(dplyr)
+library(ggplot2)
+
+rivshp <- read_sf("data/MajorRivers.shp")
+
+```
+
+# 3. Filter it to include only the Mississippi River system
+v
+# 4. Use AOI::aoi_get() to get the county boundaries for all counties in CONUS.
+```{r, echo = TRUE}
+mrb <- rivshp %>% 
+  filter(SYSTEM == "Mississippi") %>% 
+  st_as_sf(crs = 4326)#3
+
+counties = aoi_get(state = "conus", county = "all")
+
+county <- counties %>% 
+  st_as_sf(crs = 4326)
+```
+
+# 5. Use st_filter to identify the counties that intersect the Mississippi River system
+```{r, echo = TRUE}
+#counties intersecting the Mississippi River system
+ms_intersect <- st_filter(county, mrb) %>% 
+  st_as_sf(crs = 4326)
+
+
+```
+
+# 6. Make a map of the counties that intersect the Mississippi River system, along with the rivers themselves.
+```{r, echo = TRUE}
+ggplot(counties) + 
+  geom_sf() + 
+  geom_sf(data = ms_intersect, fill = "blue", alpha = .3) +
+  geom_sf(data = mrb, col = "darkblue", size = 50) +
+  theme_void()
+
+```
+# 7 Read in the city data from last assignment/lab and ensure they are a sf object in the correct CRS
+```{r, echo = TRUE}
+uscity <- read_csv("data/uscities.csv")
+
+#spatial feature of US cities
+cities_sf <- st_as_sf(uscity, coords = c("lng", "lat"), crs = 4326) %>% mutate(point = "geometry")
+
+```
+# 8. Use st_join to identify the cities that intersect the counties that intersect the Mississippi River system
+```{r, echo = TRUE}
+ms_city_cty <- st_join(ms_intersect, cities_sf)
+```
+
+# 9. Calculate the total urban population in each county by summing the population of the cities within each county that intesects the Mississippi River system.
+```{r, echo = TRUE}
+ms_cty_pop <- ms_city_cty %>% 
+  group_by(fip_code) %>%
+  summarize(population = sum(population))
+```
+
+# 10. Add this data to the subset of intersecting counties and use it to color you map using scale_*
+```{r, echo = TRUE}
+
+ggplot() +
+  # Base county layer (light background)
+  geom_sf(data = county, fill = "gray90", color = NA) + 
+  
+  # Population-scaled counties
+  geom_sf(data = ms_cty_pop, aes(fill = population), 
+          color = "white", size = 0.1, alpha = 0.8) +
+  
+  # Mississippi River
+  geom_sf(data = mrb, color = "darkblue", size = 0.5) +
+  
+  # Color scaling
+  scale_fill_viridis_c(
+    name = "population",
+    option = "plasma",
+    trans = "log10",  # Helps visualize wide population ranges
+    labels = scales::comma  # Format numbers with commas
+  ) +
+  
+  # Theme and labels
+  theme_void() +
+  labs(title = "Population Along the Mississippi River",
+       subtitle = "Counties intersecting the river basin",
+       caption = "Data: US Census Bureau")
+
+```
+
+11. Save your map as a png file in the images folder and submit it to Canvas.
+```{r, echo = TRUE}
+ggsave(last_plot(), filename = "msriver_county_pop.png", path = "C:/Users/Joshua Puyear/Documents/csu-undergrad/ess330-daily-exercises/imgs")
+```

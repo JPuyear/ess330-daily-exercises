@@ -1,0 +1,352 @@
+---
+title: 'Activity 27: Mapping the Poudre'
+output-dir: docs
+format:
+   html:
+    code-fold: true
+    toc: true
+date: "2025-05-07"
+author: 
+  name: Josh Puyear
+  email: "puyearjosh@gmail.com" 
+---
+
+Libraries
+```{r, echo = TRUE}
+library(sf)
+library(osmdata)
+library(crop)
+library(raster)
+library(terra)
+
+```
+Lecture Code
+
+
+Define the AOI
+```{r, echo = TRUE}
+(bb = AOI::geocode("Fort Collins", bbox = TRUE) |> 
+  st_transform(5070))
+```
+
+Read data from elevation map tiles, for a specific zoom, and crop to the AOI
+```{r, echo = TRUE}
+
+#data are inaccessible. wow.
+
+#elev = rast('/vsis3/lynker-spatial/gridded-resources/dem.vrt') |> 
+ # crop(bb)
+
+#writeRaster(elev, filename = "data/foco-elev.tif", overwrite = TRUE)
+
+#writeRaster(elev, filename = "../resources/foco-elev-cm.tif", overwrite = TRUE)
+```
+
+The resulting raster …
+```{r, echo = TRUE}
+(elev = rast("data/foco-elev.tif"))
+
+```
+
+Raster Values
+```{r, echo = TRUE}
+
+```
+
+Raster Values
+```{r, echo = TRUE}
+
+```
+
+All image files are the same!
+```{r, echo = TRUE}
+
+```
+
+Raster Algebra
+In these functions you can mix SpatRast objects with numbers, as long as the first argument is a raster object.
+
+That means you can add 100 to a raster object but not a raster object to 100
+```{r, echo = TRUE}
+
+```
+
+
+Replacement
+Raster values can be replaced on a conditional statements
+Doing this changes the underlying data!
+If you want to retain the original data, you must make a copy of the base layer
+
+```{r, echo = TRUE}
+
+```
+
+Modifying a raster
+When we want to modify the extent of a raster we can clip it to a new bounds
+
+crop: lets you reduce the extent of a raster to the extent of another, overlapping object:
+```{r, echo = TRUE}
+
+```
+
+
+Modifying the underlying data:
+mask: mask takes an input object (sf or SpatRast) and set anything not undelying the input to a new value (default = NA)
+```{r, echo = TRUE}
+
+```
+
+
+What is mask doing?
+```{r, echo = TRUE}
+
+```
+
+
+Crop or/and mask
+Crop is more efficient then mask
+Often you will want to mask and crop a raster
+The correct way to do this is crop then mask
+```{r, echo = TRUE}
+
+```
+
+
+Aggregate and disaggregate
+aggregate and disaggregate allow for changing the resolution of a Raster object.
+
+This is similar to the zoom scaling on a web map except the scale factor is not set to 2
+
+For aggregate, you need to specify a function determining what to do with the grouped cell values (default = mean).
+```{r, echo = TRUE}
+
+```
+
+
+app
+Just like a vector, we can apply functions over a raster with app
+
+These types of formulas are very useful for thresholding analysis
+
+These types of functions are very simular in concept to map_*
+
+
+```{r, echo = TRUE}
+
+```
+
+Create a conditional (threshold) mask
+```{r, echo = TRUE}
+
+```
+
+
+Results
+```{r, echo = TRUE}
+
+```
+
+Multiply cell-wise
+```{r, echo = TRUE}
+
+```
+
+Reclassify
+```{r, echo = TRUE}
+
+```
+
+Real Example: Classify Rainfall Regions of Colorado
+```{r, echo = TRUE}
+
+```
+
+Plot
+```{r, echo = TRUE}
+
+```
+
+Object/Field Interaction
+Often, we want to know the relationship between a raster and a vector object
+In these cases, we can use the extract function to get values of a raster at the locations (point or bounds) of a vector object
+For this example, we will use OpenStreetMap data to get the location of rivers in Fort Collins.
+```{r, echo = TRUE}
+foco_rivers <- osmdata::opq(st_bbox(st_transform(fc,4326))) |> 
+  add_osm_feature("waterway") |> 
+  osmdata_sf()
+```
+
+Lets find the longest river segment IN our extent
+```{r, echo = TRUE}
+river = foco_rivers$osm_lines |> 
+  st_transform(crs(r)) |> 
+  st_intersection(st_as_sfc(st_bbox(r))) %>% 
+  mutate(length = st_length(.)) |> 
+  slice_max(length, n = 1)
+```
+
+```{r, echo = TRUE}
+plot(r)
+plot(river, add = TRUE, col = "blue", lwd = 2)
+```
+
+
+Value Extraction
+
+Often, we want to know the profile and sinousity of a river
+To do this, we need to know the inlet and outlet as well as the straight line connector
+```{r,echo = TRUE}
+inlet  = head(st_cast(river, "POINT"), 1)
+outlet = tail(st_cast(river, "POINT"), 1) 
+pts    = bind_rows(inlet, outlet) 
+
+line = st_cast(st_union(pts), "LINESTRING")
+
+plot(r)
+plot(river, add = TRUE, col = "blue", lwd = 2)
+plot(line, add = TRUE, col = "black", lwd = 2)
+plot(outlet$geom, add = TRUE, pch = 16, col = "red")
+plot(inlet$geom,  add = TRUE, pch = 16, col = "green")
+
+```
+
+
+
+#Assigment
+
+1. To do use the code from lecture to extract all waterways from OpenStreetMap for the Bounding Box of Fort Collins, CO.
+
+```{r, echo = TRUE}
+fc = AOI::geocode("Fort Collins", bbox = TRUE)
+
+foco_rivers <- osmdata::opq(st_bbox(st_transform(fc,4326))) |> 
+  add_osm_feature("waterway") |> 
+  osmdata_sf()
+
+```
+
+2. Filter the osm_lines object to only include the Cache la Poudre River and merge the lines into a single line object with st_union(). Be sure to convert the object to a sf object with st_as_sf() when done.
+
+```{r, echo = TRUE}
+library(sf)
+library(dplyr)
+library(stringr)
+
+# Step 1: Extract osm_lines from the list and convert to sf
+river_lines <- st_as_sf(foco_rivers$osm_lines)
+
+# Step 2: Filter for Cache la Poudre (with name variations)
+poudre_river <- river_lines %>% 
+  filter(
+    str_detect(tolower(name), "cache la poudre") |  # Primary name
+    str_detect(tolower(name), "poudre river") |     # Common alternative
+    (waterway == "river" & str_detect(tolower(name), "poudre"))  # OSM tag fallback
+  )
+
+# Step 3: Merge all segments into one line
+poudre_merged <- poudre_river %>% 
+  st_union() %>%             # Combine geometries
+  st_as_sf() %>%             # Convert back to sf
+  mutate(
+    name = "Cache la Poudre River",
+    length_m = st_length(.)  # Optional: add length attribute
+  )
+
+# Verify
+plot(st_geometry(poudre_merged), col = "blue", lwd = 3)
+```
+
+3. Use st_length() to compute the length of the river for future calculations.
+
+```{r, echo = TRUE}
+library(sf)
+library(dplyr)
+
+# Assuming you've already created 'poudre_merged' from previous steps
+poudre_merged <- poudre_merged %>%
+  mutate(
+    length_m = st_length(.),  # Calculate length in meters
+    length_km = as.numeric(length_m) / 1000  # Convert to kilometers
+  )
+
+# Print the length
+cat("Cache la Poudre River Length:",
+    round(as.numeric(poudre_merged$length_m), 1), "meters",
+    "(", round(poudre_merged$length_km, 1), "km)\n")
+
+# Save for future use (as R object or CSV)
+saveRDS(poudre_merged, "poudre_river_geometry.rds")  # Preserves geometry + attributes
+
+# For tabular analysis:
+poudre_length_data <- data.frame(
+  name = "Cache la Poudre River",
+  length_m = as.numeric(poudre_merged$length_m),
+  length_km = poudre_merged$length_km
+)
+write.csv(poudre_length_data, "poudre_river_length.csv", row.names = FALSE)
+
+```
+4. Use st_cast() to convert the river object to a POINT object and save it as poudre_pts for latter extraction tasks
+
+```{r, echo = TRUE}
+library(sf)
+
+# Convert the merged LINESTRING to POINTs (one point per vertex)
+poudre_pts <- poudre_merged %>% 
+  st_cast("POINT") %>%  # Convert geometry type
+  mutate(
+    point_id = 1:n(),  # Add unique ID to each point
+    cumul_length_m = as.numeric(st_length(.)),  # Optional: cumulative length
+    .before = 1  # Insert new columns at start
+  )
+
+# Verify
+head(poudre_pts, 3)  # Check first few points
+plot(st_geometry(poudre_pts), pch = 20, cex = 0.5, col = "red")  # Visual check
+
+# Save for later use
+saveRDS(poudre_pts, "poudre_river_points.rds")
+
+```
+
+5. Use the rast() function to read in the DEM file from the lynker-spatial S3 bucket shared in last assignment. Be sure to use the vsis3 prefix!
+
+```{r, echo = TRUE}
+library(terra)
+
+url <- 'https://raw.githubusercontent.com/mikejohnson51/csu-ess-330/refs/heads/main/resources/foco-elev-cm.tif'
+
+rast(url)
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```

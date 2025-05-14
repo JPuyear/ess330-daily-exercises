@@ -1,5 +1,5 @@
 ---
-title: 'Lab 23: Getting started with geospatial'
+title: 'Activity 23: Geting started with geospatial'
 output-dir: docs
 format:
    html:
@@ -9,7 +9,6 @@ date: "2025-05-03"
 author: 
   name: Josh Puyear
   email: "puyearjosh@gmail.com" 
-  
 ---
 
 ```{r, echo = TRUE}

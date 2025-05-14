@@ -1,0 +1,155 @@
+---
+title: 'Activity 26: Introduction to Raster Data'
+output-dir: docs
+format:
+   html:
+    code-fold: true
+    toc: true
+date: "2025-05-07"
+author: 
+  name: Josh Puyear
+  email: "puyearjosh@gmail.com" 
+---
+# Starting with this base, construct a VSI prefixed URL that allows rast to read the data directly from our class Github Repo.
+
+```{r, echo = TRUE}
+url6vsis3<- 'https:/vsis3/raw.githubusercontent.com/mikejohnson51/csu-ess-330/refs/heads/main/resources/foco-elev-cm.tif'
+
+url6 <- 'https://raw.githubusercontent.com/mikejohnson51/csu-ess-330/refs/heads/main/resources/foco-elev-cm.tif'
+```
+
+# 2. Once the date is read in, describe the structure of the data in a few sentences:
+
+```{r, echo = TRUE}
+library(terra)
+
+rast(url6)
+
+```
+The raster url leads to a Spatial Raster (single layer raster) with dimensions of 725 by 572 pixels. The extent is -769695, -752535, 1978485, 2000235, which are the coordinates in centimeters. the next row of rast() describes transforamtions done on the raster to fit a coordinate reference system specified projection, which is under the NAD83 datum to give a digital elevation map in centimeters of Fort Collins.
+
+
+```{r, echo = TRUE}
+url6vsi <- rast(glue::glue("/vsicurl/{url6}"))
+```
+
+# 3. Natively, the data has a horizonal unit of cm. Multiply the data by 0.0328084 to convert the data to feet.
+```{r, echo = TRUE}
+url6vsi_ft <- url6vsi * 0.0328084
+```
+
+# 4. Extract the values from the raster into a data.frame by using the dataframe=TRUE parameter in the values() function.
+```{r, echo = TRUE}
+foco_rast <- values(url6vsi_ft, dataframe = TRUE)
+```
+
+# 5. Use ggpubr to create a density plot of the elevation data in feet. Equit the plot with clear labs, and a title as well as a theme.
+```{r, echo = TRUE}
+library(ggpubr)
+
+ggdensity(
+  data = foco_rast,          # Use dataframe, not raster object
+  x = "dem",               # Column containing elevation values
+  fill = "lightgray",      # Fill color
+  color = "black"          # Outline color
+) +
+  labs(
+    title = "Density Plot of Fort Collins Elevation",
+    x = "Elevation (feet)", # Correct axis label
+    y = "Density"
+  ) +
+  theme_bw()
+
+ggsave(filename = "focoelev_dens.png", plot = last_plot(), path = "imgs")
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
+
+```{r, echo = TRUE}
+
+
+```
