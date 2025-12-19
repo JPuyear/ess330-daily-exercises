@@ -1,19 +1,22 @@
 ---
-title: "Projects Home"
-author:
-  name: Josh Puyear
-  email: "jpuyear@colostate.edu"
-editor: visual
-project:
-  output-dir: docs
-format:
-  html:
-    css: styles.css
-width: 100%
-execute: 
-  echo: true
-self-contained: true
+toc: false
+about:
+  template: jolla
+  image-shape: rounded
+  image-width: 17em
+  links:
+    - text: LinkedIn
+      icon: linkedin
+      href: https://www.linkedin.com/in/joshua-puyear/
+    - text: iNaturalist
+      href: https://www.inaturalist.org/people/jpuyear
+    - text: GitHub
+      icon: github
+      href: https://github.com/JPuyear
+    - text: Email
+      href: mailto:joshpcuriosity@gmail.com
 ---
+
 
 ![Daily Exercise 2: First Steps of Viewing Data](C:/Users/Joshua%20Puyear/Documents/csu-undergrad/ess-330-joshp-2025/github/ess-330-daily-exercises/all-daily-exercises/02-exercise.html)
 

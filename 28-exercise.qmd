@@ -1,0 +1,66 @@
+---
+title: 'Activity 27: Mapping the Poudre'
+output-dir: docs
+format:
+   html:
+    code-fold: true
+    toc: true
+date: "2025-05-07"
+author: 
+  name: Josh Puyear
+  email: "puyearjosh@gmail.com" 
+---
+
+Libraries
+```{r, echo = TRUE}
+library(sf)
+library(osmdata)
+library(crop)
+library(raster)
+library(terra)
+
+```
+
+# Assigment
+
+1. To do use the code from lecture to extract all waterways from OpenStreetMap for the Bounding Box of Fort Collins, CO.
+
+```{r, echo = TRUE}
+fc = AOI::geocode("Fort Collins", bbox = TRUE)
+
+foco_rivers <- osmdata::opq(st_bbox(st_transform(fc,4326))) |> 
+  add_osm_feature("waterway") |> 
+  osmdata_sf()
+
+```
+
+2. Filter the osm_lines object to only include the Cache la Poudre River and merge the lines into a single line object with st_union(). Be sure to convert the object to a sf object with st_as_sf() when done.
+
+```{r, echo = TRUE}
+library(sf)
+library(dplyr)
+library(stringr)
+
+# Step 1: Extract osm_lines from the list and convert to sf
+river_lines <- st_as_sf(foco_rivers$osm_lines)
+
+# Step 2: Filter for Cache la Poudre (with name variations)
+poudre_river <- river_lines %>% 
+  filter(
+    str_detect(tolower(name), "cache la poudre") |  # Primary name
+    str_detect(tolower(name), "poudre river") |     # Common alternative
+    (waterway == "river" & str_detect(tolower(name), "poudre"))  # OSM tag fallback
+  )
+
+# Step 3: Merge all segments into one line
+poudre_merged <- poudre_river %>% 
+  st_union() %>%             # Combine geometries
+  st_as_sf() %>%             # Convert back to sf
+  mutate(
+    name = "Cache la Poudre River",
+    length_m = st_length(.)  # Optional: add length attribute
+  )
+
+# Verify
+plot(st_geometry(poudre_merged), col = "blue", lwd = 3)
+```

@@ -11,7 +11,11 @@ author:
   email: "puyearjosh@gmail.com" 
 ---
 
+
+
 Libraries
+
+
 ```{r, echo = TRUE}
 library(sf)
 library(osmdata)
@@ -21,9 +25,13 @@ library(terra)
 
 ```
 
+
+
 # Assigment
 
 1. To do use the code from lecture to extract all waterways from OpenStreetMap for the Bounding Box of Fort Collins, CO.
+
+
 
 ```{r, echo = TRUE}
 fc = AOI::geocode("Fort Collins", bbox = TRUE)
@@ -34,7 +42,11 @@ foco_rivers <- osmdata::opq(st_bbox(st_transform(fc,4326))) |>
 
 ```
 
+
+
 2. Filter the osm_lines object to only include the Cache la Poudre River and merge the lines into a single line object with st_union(). Be sure to convert the object to a sf object with st_as_sf() when done.
+
+
 
 ```{r, echo = TRUE}
 library(sf)
@@ -65,7 +77,11 @@ poudre_merged <- poudre_river %>%
 plot(st_geometry(poudre_merged), col = "blue", lwd = 3)
 ```
 
+
+
 3. Use st_length() to compute the length of the river for future calculations.
+
+
 
 ```{r, echo = TRUE}
 library(sf)
@@ -95,7 +111,11 @@ poudre_length_data <- data.frame(
 write.csv(poudre_length_data, "poudre_river_length.csv", row.names = FALSE)
 
 ```
+
+
 4. Use st_cast() to convert the river object to a POINT object and save it as poudre_pts for latter extraction tasks
+
+
 
 ```{r, echo = TRUE}
 library(sf)
@@ -118,7 +138,11 @@ saveRDS(poudre_pts, "poudre_river_points.rds")
 
 ```
 
+
+
 5. Use the rast() function to read in the DEM file from the lynker-spatial S3 bucket shared in last assignment. Be sure to use the vsis3 prefix!
+
+
 
 ```{r, echo = TRUE}
 library(terra)
@@ -130,7 +154,11 @@ elev_ft <- url6vsi * 0.0328084
 
 ```
 
+
+
 6. Use the extract() function to extract the elevation values from the DEM at the points along the river.
+
+
 ```{r, echo = TRUE}
 # 4. Convert points to SpatVector (required for terra::extract)
 poudre_vect <- vect(poudre_pts)
@@ -147,7 +175,11 @@ elevations <- terra::extract(
 
 ```
 
+
+
 7. Use bind_cols() to combine the spatial river points with the extracted elevation values.
+
+
 ```{r, echo = TRUE}
 # 6. Combine with original points
 poudre_pts_with_elev <- bind_cols(
@@ -161,7 +193,11 @@ summary(poudre_pts_with_elev$elevation_ft)
 
 ```
 
+
+
 8. Use mutate() to add a new column called ID that is a sequence from 1 to the number of points in the river (n()).
+
+
 ```{r, echo = TRUE}
 library(dplyr)
 library(sf)
@@ -175,7 +211,11 @@ poudre_pts_with_elev <- poudre_pts_with_elev %>%
 glimpse(poudre_pts_with_elev)
 ```
 
+
+
 9. Use the st_distance() function to compute the straight line distance between the first and last points in the river.
+
+
 ```{r, echo = TRUE}
 # 9. Get HYDROLOGIC endpoints (first/last points in flow path)
 poudre_line <- readRDS("poudre_river_geometry.rds")
@@ -202,7 +242,11 @@ dist_km <- round(as.numeric(straight_line_dist)/1000, 1)
 ```
 
 
+
+
 10.Divide the length of the full river (step 3) by this straight line distance to get the sinuosity. Report the value and what it means. Does this value make sense with respect to the complete Poudre River?
+
+
 ```{r, echo = TRUE}
 
 poudre_length_data$length_km / dist_km
@@ -211,9 +255,13 @@ poudre_length_data$length_km / dist_km
 # This is not correct. the ditance is more than 12 km, but I must move on. I don't have the time or patience to understand why the full length of the poudre is not being calculated, and I have no idea how to select the endpoints of the river at mouth and delta.
 
 ```
+
+
 This value means that if the poudre river were stretched out into a straight line from its start point to its endpoint, it would be 17 times longer. It's super windy! Especially in the lower reaches of the Poudre, when things flatten out.
 
 11. The slope of a river is the change in elevation between the inlet and outlet divided by the length of the river. Compute this value and report it. Remember the units of the elevation (cm) and of your length!
+
+
 ```{r, echo = TRUE}
 
 #I would calculate slope if I could get my elevation data to match up,but there are currently a lot of missing values because my DEM data is only for Fort Collins and the poudre extends beyond fort collins.
@@ -221,13 +269,21 @@ This value means that if the poudre river were stretched out into a straight lin
 ```
 
 
+
+
 12. Use ggplot() to create a line plot of the elevation values along the river. Be sure to use the ID column as the x-axis and the dem column as the y-axis. Add nice lables and themese to your chart.
+
+
 ```{r, echo = TRUE}
 # No
 
 ```
 
+
+
 13. Use ggplot() to plot the spatial mpa of the river profile. Use the geom_sf() function to plot the river and color it by elevation. Be sure to use a nice color scale and theme.
+
+
 ```{r, echo = TRUE}
 # No
 

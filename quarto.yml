@@ -3,14 +3,76 @@ project:
   output-dir: docs
   type: website
   
-website: 
-  title: "ESS 330 Daily Exercises"
+    project:
+  type: website
+  output-dir: docs
+  
+website:
+  title: "Joshua Puyear"
+  page-footer: 
+    left: "@JPuyear, 2025" 
+    right:
+      - icon: github
+        href: https://github.com/JPuyear
+      - icon: linkedin
+        href: https://linkedin.com/in/joshua-puyear
   navbar:
     left:
-      - href: index.qmd
-        text: Home
-
+      - href: 02-exercise.qmd
+        text: Exercise 2
+      - href: 03-exercise.qmd
+        text: Exercise 3
+      - href: 04-exercise.qmd
+        text: Exercise 4
+      - href: 05-exercise.qmd
+        text: Exercise 5
+      - href: 06-exercise.qmd
+        text: Exercise 6
+      - href: 07-exercise.qmd
+        text: Exercise 7
+      - href: 08-exercise.qmd
+        text: Exercise 8
+      - href: 09-exercise.qmd
+        text: Exercise 9
+      - href: 10-exercise.qmd
+        text: Exercise 10
+      - href: 11-exercise.qmd
+        text: Exercise 11
+      - href: 12-exercise.qmd
+        text: Exercise 12
+      - href: 13-exercise.qmd
+        text: Exercise 13
+      - href: 14-exercise.qmd
+        text: Exercise 14
+      - href: 15-exercise.qmd
+        text: Exercise 15
+      - href: 16-exercise.qmd
+        text: Exercise 16
+      - href: 17-exercise.qmd
+        text: Exercise 17
+      - href: 18-exercise.qmd
+        text: Exercise 18
+      - href: 19-exercise.qmd
+        text: Exercise 19
+      - href: 20-exercise.qmd
+        text: Exercise 20
+      - href: 21-exercise.qmd
+        text: Exercise 21
+      - href: 22-exercise.qmd
+        text: Exercise 22
+      - href: 23-exercise.qmd
+        text: Exercise 23
+      - href: 24-exercise.qmd
+        text: Exercise 24
+      - href: 25-exercise.qmd
+        text: Exercise 25
+      - href: 26-exercise.qmd
+        text: Exercise 26
+      - href: 27-exercise.qmd
+        text: Exercise 27
+     
 format:
   html:
-    self-contained: true
+    theme: styles.scss
     toc: true
+    page-layout: full
