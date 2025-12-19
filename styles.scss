@@ -1,0 +1,16 @@
+/*-- scss:defaults --*/
+$primary-color: black;
+$background-color: white;
+$text-color: #123;
+$font-stack: Helvetica, sans-serif;
+
+/*-- scss:rules --*/
+body {
+  background: $background-color;
+  color: $text-color;
+  font-family: $font-stack;
+}
+
+h1, h2, h3 {
+  color: $primary-color;
+}

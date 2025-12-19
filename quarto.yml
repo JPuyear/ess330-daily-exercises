@@ -1,5 +1,5 @@
 project:
-  title: "esss-330-daily-exercises"
+  title: "ess-330-daily-exercises"
   output-dir: docs
   type: website
   
@@ -73,6 +73,6 @@ website:
      
 format:
   html:
-    theme: styles.scss
+    theme: styles.css
     toc: true
     page-layout: full
