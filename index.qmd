@@ -1,4 +1,5 @@
 ---
+image: imgs/my-first.marathon.jpg
 toc: false
 about:
   template: jolla
