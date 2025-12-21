@@ -10,7 +10,7 @@ project:
 website:
   title: "Joshua Puyear"
   page-footer: 
-    left: "@JPuyear, 2025" 
+    left: "@JPuyear, 2026" 
     right:
       - icon: github
         href: https://github.com/JPuyear
@@ -24,8 +24,6 @@ website:
         text: Exercise 3
       - href: 04-exercise.qmd
         text: Exercise 4
-      - href: 05-exercise.qmd
-        text: Exercise 5
       - href: 06-exercise.qmd
         text: Exercise 6
       - href: 07-exercise.qmd
@@ -34,8 +32,6 @@ website:
         text: Exercise 8
       - href: 09-exercise.qmd
         text: Exercise 9
-      - href: 10-exercise.qmd
-        text: Exercise 10
       - href: 11-exercise.qmd
         text: Exercise 11
       - href: 12-exercise.qmd

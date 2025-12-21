@@ -16,6 +16,7 @@ self-contained: true
 Use modeltime to forecast the next 12 months of streamflow data in the Poudre River based on last time assignment.
 
 Loading libraries:
+
 ```{r, echo = TRUE}
 library(modeltime)
 library(dataRetrieval)
@@ -35,7 +36,9 @@ library(parsnip)
 library(patchwork)
 
 ```
+
 Previous assingment's data.frame
+
 ```{r, echo = TRUE}
 #previous assignment's data table
 
@@ -61,6 +64,7 @@ head(poudre_flow)
 ## Forecasting the next 12 months
 
 Timeseries Split
+
 ```{r, echo = TRUE}
 
 poudre_flow <- poudre_flow |>
@@ -76,6 +80,7 @@ training <-  training(splits)
 testing  <-  testing(splits)
 
 ```
+
 Making the models
 
 ```{r, echo = TRUE}
@@ -87,6 +92,7 @@ mods <- list(
 ```
 
 ## Use the prophet_reg(), and arima_reg() function to create a Prophet model for forecasting.
+
 ```{r, echo = TRUE}
 models <- map(mods, ~ fit(.x, Flow ~ date, data = training))
 
@@ -102,7 +108,9 @@ modeltime_accuracy(calibration_table) |>
   arrange(mae)
 
 ```
-## predict flow for the next 12 months 
+
+## predict flow for the next 12 months
+
 ```{r, echo = TRUE}
 forecast <- calibration_table |> modeltime_forecast(h = "12 months", new_data = testing,
 actual_data = poudre_flow)
@@ -110,7 +118,9 @@ actual_data = poudre_flow)
 plot_modeltime_forecast(forecast)
 
 ```
+
 ## Refit the data to the full dataset
+
 ```{r, echo = TRUE}
 refit_tbl <- calibration_table |>
   modeltime_refit(data = poudre_flow)
@@ -130,6 +140,7 @@ refit_forecast <- refit_tbl |>
 ```
 
 ## Use dataRetrieval to download daily streamflow for the next 12 months. Aggregate this data to monthly averages and compare it to the predictions made by your modeltime model.
+
 ```{r, echo = TRUE}
 library(dataRetrieval)
 
@@ -150,6 +161,7 @@ poudre_24 <- poudre_24 %>%
 ```
 
 ## Compute the R2 value between the model predictions and the observed data using a linear model and report the meaning.
+
 ```{r, echo = TRUE}
 forecast_arima <- forecast %>% 
   filter(.model_desc == "ARIMA(1,0,0)(0,1,0)[12]") %>% 
