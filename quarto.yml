@@ -69,6 +69,6 @@ website:
      
 format:
   html:
-    theme: styles.css
+    theme: styles.scss
     toc: true
     page-layout: full
