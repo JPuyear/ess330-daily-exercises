@@ -1,9 +1,4 @@
 project:
-  title: "ess-330-daily-exercises"
-  output-dir: docs
-  type: website
-  
-    project:
   type: website
   output-dir: docs
   
